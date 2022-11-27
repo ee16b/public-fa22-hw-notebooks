@@ -1,0 +1,83 @@
+\begin{problem}{Min Norm Proofs}{TODO}{0}{0}
+    Recall from lecture and the previous homework that we need to find a value of $\vec{x}_{\star} \in \mathbb{R}^n$ that best approximates
+    \begin{equation}
+        A \vec{x}_{\star} \approx \vec{y}
+    \end{equation}
+    where $\vec{y} \in \mathbb{R}^m$. This is the typical problem of least squares, but sometimes we can have multiple values of $\vec{x}$ that approximate $A \vec{x} \approx \vec{y}$ equally well. To choose a unique solution, we pick the $\vec{x}_{\star}$ with minimum norm.
+
+    If $A$ is rank $r = \rank(A)$ and has SVD $A = U \Sigma V^\top$, we can write $U \coloneqq \bmqty{U_r & U_{m-r}}$, $V \coloneqq \bmqty{V_r & V_{n-r}}$, and $\Sigma = \bmqty{\Sigma_r & 0_{r \times (n-r)} \\ 0_{(m-r) \times r} & 0_{(m-r) \times (n-r)}}$. From the previous homework, you determined that the optimal solution for $\vec{x}_{\star}$, given the requirements above, is
+    \begin{equation}
+        \label{eq:prev_hw_sol}
+        \vec{x}_{\star} = V \bmqty{\Sigma_r^{-1} U_r^\top \vec{y} \\ \vec{0}_{n-r}}
+    \end{equation}
+
+    \begin{problempartlist}
+        \begin{problempart}{TODO}{0}{0}
+            The first property we will show is that $\vec{x}_{\star} \in \Col{A^\top}$. \textbf{To do this, first prove that $\Null{A} \perp \Col{A^\top}$.} Use the fact that an SVD of $A^\top$ is $A^\top = V \Sigma U^\top$, and use Theorem 14 from \href{https://eecs16b.org/notes/fa22/note16.pdf}{Note 16}. \textbf{Then, show that $\dim{\Null{A}} + \dim{\Col{A^\top}} = n$, and use this fact to argue that if a vector $\vec{\ell} \perp \Null{A}$ (i.e., it is orthogonal to every vector in $\Null{A}$), then $\vec{\ell} \in \Col{A^\top}$.}
+
+            \begin{hint}
+                When we are asked to show $\Null{A} \perp \Col{A^\top}$, you need to argue that every vector in $\Null{A}$ is orthogonal to every vector in $\Col{A^\top}$.
+            \end{hint}
+        \end{problempart}
+
+        \begin{solution}{0in}
+            From Theorem 14, we have that $\Col{A^\top} = \Col{V_r}$ and $\Null{A} = \Col{V_{n-r}}$. Since the columns of $V_r$ are orthogonal to the columns in $V_{n-r}$, we have that $\Col{V_{n-r}} \perp \Col{V_r}$ so $\Null{A} \perp \Col{A^\top}$. Since $V$ is an orthonormal matrix, all the columns are linearly independent. Hence, $\dim{\Col{V_r}} = r$ and $\dim{\Col{V_{n-r}}} = n-r$. Thus, $\dim{\Null{A}} + \dim{\Col{A^\top}} = \dim{\Col{V_{n-r}}} + \dim{\Col{V_r}} = n - r + r = n$. From this, we know that $\Null{A}$ and $\Col{A^\top}$ together span $\mathbb{R}^n$, and they span distinct directions in $\mathbb{R}^n$ (i.e., there cannot be any vector in both $\Null{A}$ and $\Col{A^\top}$ simultaneously except $\vec{0}$). Thus, if we have a vector $\vec{\ell} \perp \Null{A}$ (equivalently, $\vec{\ell} \not \in \Null{A}$), then $\vec{\ell}$ is in the remaining portion of $\mathbb{R}^n$ that happens to be spanned by $\Col{A^\top}$.
+        \end{solution}
+
+        \begin{problempart}{TODO}{0}{0}
+            \textbf{Show that we can rewrite \cref{eq:prev_hw_sol} as
+            \begin{equation}
+                \label{eq:compact_svd}
+                \vec{x}_{\star} = V_r \Sigma_r^{-1} U_r^\top \vec{y}
+            \end{equation}
+            Use this to show that $\vec{x}_{\star} \perp \Null{A}$ and hence $\vec{x}_{\star} \in \Col{A^\top}$.}
+
+            \begin{hint}
+                For the first part, write out $V = \bmqty{V_r & V_{n-r}}$ and perform block matrix multiplication.
+            \end{hint}
+            \begin{hint}
+                For the second part, write $\vec{x}_{\star} = V_r \vec{\alpha}$ where $\vec{\alpha} \coloneqq \Sigma_r^{-1} U_r^\top \vec{y}$. What does this mean about $\vec{x}_{\star}$'s relationship with the columns of $V_{n-r}$?
+            \end{hint}
+        \end{problempart}
+
+        \begin{solution}{0in}
+            Following the hints, we can write
+            \begin{align}
+                \vec{x}_{\star} &= V \bmqty{\Sigma_r^{-1} U_r^\top \vec{y} \\ \vec{0}_{n-r}} \\
+                &= \bmqty{V_r & V_{n-r}} \bmqty{\Sigma_r^{-1} U_r^\top \vec{y} \\ \vec{0}_{n-r}} \\
+                &= V_r \Sigma_r^{-1} U_r^\top \vec{y} + V_{n-r} \vec{0}_{n-r} \\
+                &= V_r \Sigma_r^{-1} U_r^\top \vec{y}
+            \end{align}
+            For the second part of the problem, we can write $\vec{x} = V_r \vec{\alpha}$ where $\vec{\alpha} \coloneqq \Sigma_r^{-1} U_r^\top \vec{y}$ as described in the hint. This means that $\vec{x}$ is orthogonal to the columns of $V_{n-r}$ (since it is a linear combination of the columns of $V_r$), and hence, $\vec{x} \perp \Null{A}$ so $\vec{x} \in \Col{A^\top}$.
+        \end{solution}
+
+        \begin{problempart}{TODO}{0}{0}
+            Next, we will prove that, when $r = \rank(A) = m$ (so $A$ has to be a wide matrix), we have the following min norm solution:
+            \begin{equation}
+                \label{eq:min_norm_desired}
+                \vec{x}_{\star} = A^\top \pqty{A A^\top}^{-1} \vec{y}
+            \end{equation}
+            Using \cref{eq:compact_svd}, show that the above equation holds true.
+            \begin{hint}
+                Use the compact SVD, namely $A = U_r \Sigma_r V_r^\top$.
+            \end{hint}
+            \begin{hint}
+                $U_r$ should be a square, orthonormal matrix in this case. This is not necessarily the case for $V_r$, but remember that $V_r^\top V_r = I$.
+            \end{hint}
+        \end{problempart}
+
+        \begin{solution}{0in}
+            Note that $U_r = U$ in this case since $r = m$ (so $U_r$ has $m$ columns). Let $A = U_r \Sigma_r V_r^\top$. Plugging this into the right hand side of \cref{eq:min_norm_desired}, we get
+            \begin{align}
+                A^\top \pqty{A A^\top}^{-1} \vec{y} &= \pqty{U_r \Sigma_r V_r^\top}^{\top} \pqty{U_r \Sigma_r V_r^\top \pqty{U_r \Sigma_r V_r^\top}^{\top}}^{-1} \vec{y} \\
+                &= V_r \Sigma_r U_r^\top \pqty{U_r \Sigma_r V_r^\top V_r \Sigma_r U_r^\top}^{-1} \vec{y} \\
+                &= V_r \Sigma_r U_r^\top \pqty{U_r \Sigma_r^2 U_r^\top}^{-1} \vec{y} \\
+                &= V_r \Sigma_r U_r^\top \pqty{U_r^\top}^{-1} \pqty{\Sigma_r^2}^{-1} \pqty{U_r}^{-1} \vec{y} \\
+                &=  V_r \Sigma_r \pqty{\Sigma_r^2}^{-1} \pqty{U_r}^{-1} \vec{y} \\
+                &= V_r \Sigma_r \Sigma_r^{-2} U_r^\top \vec{y} \\
+                &= V_r \Sigma_r^{-1} U_r^\top \vec{y}
+            \end{align}
+            which is exactly the right hand side of \cref{eq:compact_svd}.
+        \end{solution}
+    \end{problempartlist}
+\end{problem}

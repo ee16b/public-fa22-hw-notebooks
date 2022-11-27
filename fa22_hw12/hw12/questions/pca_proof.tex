@@ -1,0 +1,108 @@
+\begin{problem}{PCA Introduction}{TODO}{0}{0}
+    Let $X \in \mathbb{R}^{m \times n}$ be defined as $X \coloneqq \bmqty{\vec{x}_1 & \cdots & \vec{x}_n}$ where each $\vec{x}_i \in \mathbb{R}^m$. Let $X$ have an SVD $X = U \Sigma V^\top$. Now, let $U_\ell \coloneqq \bmqty{\vec{u}_1 & \cdots & \vec{u}_\ell}$ where $\vec{u}_i$ is the $i$th column of $U$. In other words, $U_\ell$ is the first $\ell$ columns of $U$. In this problem, we will go about showing that
+    \begin{equation}
+        U_\ell \in \argmin_{W \in \mathbb{R}^{m \times \ell}} \sum_{i = 1}^n \norm{\vec{x}_i - W W^\top \vec{x}_i}^2
+    \end{equation}
+    where $W^\top W = I_\ell$ (i.e., it is a matrix with orthonormal columns). This is an important result for deriving PCA, as you will see in lecture.
+
+    \begin{problempartlist}
+        \begin{problempart}{TODO}{0}{0}
+            \textbf{First, show that
+            \begin{equation}
+                \norm{\vec{x}_i - W W^\top \vec{x}_i}^2 = \norm{\vec{x}_i}^2 - \norm{W^\top \vec{x}_i}^2
+            \end{equation}}
+            \begin{hint}
+                Expand the left hand side of the equation above using transposes. That is, use the fact that $\norm{\vec{v}}^2 = \vec{v}^\top \vec{v}$.
+            \end{hint}
+        \end{problempart}
+
+        \begin{solution}{0in}
+            We have that
+            \begin{align}
+                \norm{\vec{x}_i - W W^\top \vec{x}_i}^2 &= \pqty{\vec{x}_i - W W^\top \vec{x}_i}^\top \pqty{\vec{x}_i - W W^\top \vec{x}_i} \\
+                &= \pqty{\vec{x}_i^\top - \vec{x}_i^\top W W^\top} \pqty{\vec{x}_i - W W^\top \vec{x}_i} \\
+                &= \vec{x}_i^\top \vec{x}_i - \vec{x}_i^\top W W^\top \vec{x}_i - \vec{x}_i^\top W W^\top \vec{x}_i +  \vec{x}_i^\top W \underbrace{W^\top W}_{I_\ell} W^\top \vec{x}_i \\
+                &= \norm{\vec{x}_i}^2 - \norm{W^\top \vec{x}_i}^2 - \norm{W^\top \vec{x}_i}^2 + \norm{W^\top \vec{x}_i}^2 \\
+                &= \norm{\vec{x}_i}^2 - \norm{W^\top \vec{x}_i}^2
+            \end{align}
+        \end{solution}
+
+        \begin{problempart}{TODO}{0}{0}
+            Using the result from the previous part, we can simplify the original optimization problem to say
+            \begin{align}
+                \argmin_{W \in \mathbb{R}^{m \times \ell}} \sum_{i = 1}^n \norm{\vec{x}_i - W W^\top \vec{x}_i}^2 &= \argmin_{W \in \mathbb{R}^{m \times \ell}} \sum_{i = 1}^n \pqty{\norm{\vec{x}_i}^2 - \norm{W^\top \vec{x}_i}^2} \\
+                \argmin_{W \in \mathbb{R}^{m \times \ell}} \sum_{i = 1}^n \pqty{- \norm{W^\top \vec{x}_i}^2} \\
+                \argmax_{W \in \mathbb{R}^{m \times \ell}} \sum_{i = 1}^n \norm{W^\top \vec{x}_i}^2
+            \end{align}
+            where we get the second line from noticing that we cannot change $\vec{x}_i$, so we remove it from the optimization problem. Then, we pull out the negative to turn the minimization problem into a maximization problem. Now, let $W \coloneqq \bmqty{\vec{w}_1 & \cdots & \vec{w}_\ell}$. \textbf{Show that
+            \begin{equation}
+                \sum_{i = 1}^n \norm{W^\top \vec{x}_i}^2 = \sum_{k = 1}^\ell \vec{w}_k^\top \pqty{X X^\top} \vec{w}_k
+            \end{equation}}
+            You may use the fact that $\sum_{i = 1}^n \vec{x}_i \vec{x}_i^\top = X X^\top$.
+            \begin{hint}
+                Start by expanding out the norm squared expression as the sum of squares of the individual entries of $W^\top \vec{x}_i$.
+            \end{hint}
+        \end{problempart}
+
+        \begin{solution}{0in}
+            We have that the $k$th element of $W^\top \vec{x}_i$ is $\vec{w}_k^\top \vec{x}_i$, so
+            \begin{align}
+                \sum_{i = 1}^n \norm{W^\top \vec{x}_i}^2 &= \sum_{i = 1}^n \sum_{k = 1}^\ell \pqty{\vec{w}_k^\top \vec{x}_i}^2 \\
+                &= \sum_{i = 1}^n \sum_{k = 1}^\ell \pqty{\vec{w}_k^\top \vec{x}_i} \pqty{\vec{w}_k^\top \vec{x}_i} \\
+                &= \sum_{i = 1}^n \sum_{k = 1}^\ell \pqty{\vec{w}_k^\top \vec{x}_i} \pqty{\vec{x}_i^\top \vec{w}_k} \\
+                &= \sum_{k = 1}^\ell \vec{w}_k^\top \pqty{\sum_{i = 1}^n \vec{x}_i \vec{x}_i^\top} \vec{w}_k \\
+                \label{eq:before_svd}
+                &= \sum_{k = 1}^\ell \vec{w}_k^\top \pqty{X X^\top} \vec{w}_k
+            \end{align}
+        \end{solution}
+
+        \begin{problempart}{TODO}{0}{0}
+            \textbf{Use the result of the previous part to show that
+            \begin{equation}
+                \sum_{i = 1}^n \norm{W^\top \vec{x}_i}^2 = \sum_{k = 1}^\ell \vec{\wt{w}}_k^\top \Sigma \Sigma^\top \vec{\wt{w}}_k
+            \end{equation}
+            where $\vec{\wt{w}}_k = U^\top \vec{w}_k$. Then, argue that $\Sigma \Sigma^\top$ can be written as
+            \begin{equation}
+                \Sigma \Sigma^\top = \bmqty{\sigma_1^2 & & & & & \\ & \ddots & & & & \\ & & \sigma_r^2 & & & \\ & & & 0 & & \\ & & & & \ddots & \\ & & & & & 0}
+            \end{equation}
+            where $r = \rank(X)$}
+            \begin{hint}
+                Use the SVD of $X$ to simplify the $X X^\top$ term from the previous part.
+            \end{hint}
+        \end{problempart}
+
+        \begin{solution}{0in}
+            We have that $X X^\top = \pqty{U \Sigma V^\top} \pqty{U \Sigma V^\top}^\top = U \Sigma V^\top V \Sigma^\top U^\top = U \Sigma \Sigma^\top U^\top$. Plugging this in to \cref{eq:before_svd}, we get
+            \begin{align}
+                \sum_{i = 1}^n \norm{W^\top \vec{x}_i}^2 &= \sum_{k = 1}^\ell \vec{w}_k^\top U \Sigma \Sigma^\top U^\top \vec{w}_k \\
+                &= \sum_{k = 1}^\ell \vec{\wt{w}}_k^\top \Sigma \Sigma^\top \vec{\wt{w}}_k
+            \end{align}
+            Since $\Sigma \coloneqq \bmqty{\Sigma_r & 0_{r \times (n-r)} \\ 0_{(m-r) \times r} & 0_{(m-r) \times (n-r)}}$, we have that $\Sigma \Sigma^\top = \bmqty{\Sigma_r^2 & 0_{r \times (m-r)} \\ 0_{(m-r) \times r} & 0_{(m-r) \times (m-r)}}$ where $\Sigma_r^2 = \bmqty{\sigma_1^2 & & \\ & \ddots & \\ & & \sigma_r^2}$.
+        \end{solution}
+
+        \begin{problempart}{TODO}{0}{0}
+            From the previous part, we have the following expression:
+            \begin{equation}
+                \sum_{i = 1}^n \norm{W^\top \vec{x}_i}^2 = \sum_{k = 1}^\ell \vec{\wt{w}}_k^\top \bmqty{\sigma_1^2 & & & & & \\ & \ddots & & & & \\ & & \sigma_r^2 & & & \\ & & & 0 & & \\ & & & & \ddots & \\ & & & & & 0} \vec{\wt{w}}_k
+            \end{equation}
+            One may show (via Cauchy-Schwarz) that
+            \begin{equation}
+                \label{eq:cauchy_schwarz}
+                \sum_{k = 1}^\ell \vec{\wt{w}}_k^\top \bmqty{\sigma_1^2 & & & & & \\ & \ddots & & & & \\ & & \sigma_r^2 & & & \\ & & & 0 & & \\ & & & & \ddots & \\ & & & & & 0} \vec{\wt{w}}_k \leq \sum_{k = 1}^\ell \sigma_k^2
+            \end{equation}
+            if $\vec{\wt{w}}_k$ are required to be orthonormal (you are not required to show this). \textbf{Using this fact, find some specific values of $\vec{\wt{w}}_i$ such that we attain \cref{eq:cauchy_schwarz} with equality. Then, use this to show that $U_\ell$ maximizes $\sum_{i = 1}^n \norm{W^\top \vec{x}_i}^2$ and hence is a solution to the original optimization problem.}
+        \end{problempart}
+
+        \begin{solution}{0in}
+            To obtain \cref{eq:cauchy_schwarz} with equality, we can set $\vec{\wt{w}}_k = \vec{e}_k$, which is the $k$th standard basis vector (i.e., a vector with 1 in the $k$th position and zeros everywhere else). Notice that
+            \begin{equation}
+                \bmqty{\sigma_1^2 & & & & & \\ & \ddots & & & & \\ & & \sigma_r^2 & & & \\ & & & 0 & & \\ & & & & \ddots & \\ & & & & & 0} \vec{e}_k = \sigma^2_k
+            \end{equation}
+            so we obtain \cref{eq:cauchy_schwarz} with equality. Since $\vec{\wt{w}}_k = \vec{e}_k$ and $\vec{w}_k = U \vec{\wt{w}}_k$, we have that $\vec{w}_k = \vec{u}_k$, which is the $k$th column of $U$. Hence,
+            \begin{equation}
+                W = \bmqty{\vec{w}_1 & \cdots & \vec{w}_\ell} = \bmqty{\vec{u}_1 & \cdots & \vec{u}_\ell} = U_\ell
+            \end{equation}
+            We can set $\vec{\wt{w}}_1, \ldots, \vec{\wt{w}}_\ell$ to be any permutation of the first $\ell$ standard basis vectors, but we choose this specific ordering so we end up with $W = U_\ell$. Since $W = U_\ell$ maximizes $\sum_{i = 1}^n \norm{W^\top \vec{x}_i}^2$, we have that it minimizes the original optimization problem, so $W = U_\ell$ is a solution.
+        \end{solution}
+    \end{problempartlist}
+\end{problem}
